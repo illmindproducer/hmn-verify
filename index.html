@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>HEWN · Verify a certificate</title>
-<meta name="description" content="Check a HEWN certificate of human creation: its signature, its trail in HEWN's public log, and its Bitcoin anchor. Every check runs in your browser.">
+<title>HMN · Verify a certificate</title>
+<meta name="description" content="HMN (Human Made Notary). Check an HMN certificate of human creation: its signature, its trail in HMN's public log, and its Bitcoin anchor. Every check runs in your browser.">
 <meta name="robots" content="noindex">
 <style>
-/* Same instrument-panel look as the HEWN app. One deliberate dark design. */
+/* Same instrument-panel look as the HMN app. One deliberate dark design. */
 :root {
   --bg: #08090b; --bg-2: #0d0f12; --line: rgba(255,255,255,.075); --line-2: rgba(255,255,255,.13);
   --ink: #eef1f5; --ink-2: #a7afba; --ink-3: #6b7380;
@@ -76,7 +76,7 @@ footer { color: var(--ink-3); font-size: 12.5px; margin-top: 30px; line-height: 
 <div class="wrap">
   <header>
     <svg viewBox="0 0 40 40" aria-hidden="true"><use href="#seal"/></svg>
-    <span class="wordmark">HEWN</span>
+    <span class="wordmark" title="HMN · Human Made Notary">HMN</span>
     <span class="crumb">Verify</span>
   </header>
 
@@ -95,9 +95,9 @@ footer { color: var(--ink-3); font-size: 12.5px; margin-top: 30px; line-height: 
   </section>
 
   <footer>
-    HEWN witnesses music being made and signs a certificate that a human made it, backed by the trail of work, not a guess.
-    This page never shows or plays the music. It checks the certificate's signature, finds its trail entries in HEWN's public append-only log,
-    and shows the Bitcoin stamp that fixes that log in time, so the record can't be changed afterward, even by HEWN.
+    HMN (Human Made Notary) witnesses music being made and signs a certificate that a human made it, backed by the trail of work, not a guess.
+    This page never shows or plays the music. It checks the certificate's signature, finds its trail entries in HMN's public append-only log,
+    and shows the Bitcoin stamp that fixes that log in time, so the record can't be changed afterward, even by HMN.
   </footer>
 </div>
 
@@ -160,7 +160,7 @@ function card(c, id) {
   const bars = Array.from({ length: 5 }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("");
   const mins = ev.hands_on_minutes || 0, hands = mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`;
   const tiles = arch
-    ? [[num(ev.versions), ev.versions === 1 ? "version found" : "versions found"], [date(ev.first_seen), "earliest file date"], [date(ev.last_seen), "last saved"], [new Date(ev.registered_ms).toLocaleDateString(), "registered with HEWN"]]
+    ? [[num(ev.versions), ev.versions === 1 ? "version found" : "versions found"], [date(ev.first_seen), "earliest file date"], [date(ev.last_seen), "last saved"], [new Date(ev.registered_ms).toLocaleDateString(), "registered with HMN"]]
     : [[num(ev.saves), "witnessed saves"], [hands, "hands-on time"], [num(ev.recorded_takes), "recorded takes"], [num(ev.midi_notes_played), "notes played"],
        ...(ev.minutes_heard ? [[`${ev.minutes_heard}m`, "of the DAW heard"]] : []), [new Date(ev.first_save_ms).toLocaleDateString(), "first save"]];
   return `<svg class="seal" viewBox="0 0 40 40" aria-hidden="true"><use href="#seal"/></svg>
@@ -169,9 +169,9 @@ function card(c, id) {
     <h2>${esc(c.project?.name)}</h2>
     <div class="line">${esc(c.tier)} · <span class="badge ${arch ? "arch" : ""}">${esc(c.depth)}</span> · ${esc(c.project?.daw)}${c.pre_ai_candidate ? ` · <span class="badge arch">Pre-AI candidate</span>` : ""}</div>
     <div class="strength" style="--fill:${arch ? "var(--archive)" : "var(--live)"}"><span class="sbar">${bars}</span><span class="s-num">${n}<small>/5</small></span>
-      <span class="s-label">Proof strength · ${arch ? "Back catalog" : "HEWN watched"}</span></div>
+      <span class="s-label">Proof strength · ${arch ? "Back catalog" : "HMN watched"}</span></div>
     <div class="grid">${tiles.map(([b, s]) => `<div><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join("")}</div>
-    ${c.audio_witnessed === false ? `<p class="note" style="color:var(--amber)">HEWN witnessed this project, but not this audio being exported from it. The link is the creator's claim.</p>` : ""}
+    ${c.audio_witnessed === false ? `<p class="note" style="color:var(--amber)">HMN witnessed this project, but not this audio being exported from it. The link is the creator's claim.</p>` : ""}
     ${ev.snapshots_matching_final ? `<p class="note">The final audio was heard taking shape in the DAW ${ev.snapshots_matching_final} times while it was being made.</p>` : ""}
     ${arch ? `<p class="note">${esc(c.note)}</p>` : ""}`;
 }
@@ -194,7 +194,7 @@ async function verify(id) {
   }
   const c = JSON.parse(v.certificate.canonical);
   $("#card").innerHTML = card(c, v.certificate.id);
-  document.title = `HEWN · ${c.project?.name || id}`;
+  document.title = `HMN · ${c.project?.name || id}`;
 
   const checks = [];
   const add = (state, title, detail) => checks.push({ state, title, detail });
@@ -218,11 +218,11 @@ async function verify(id) {
   const times = v.events.map((e) => e.server_ts_ms).sort((a, b) => a - b);
   const span = times.length ? (times.length > 1 ? `logged between ${day(times[0])} and ${day(times.at(-1))}` : `logged ${day(times[0])}`) : "";
   const allIn = proven === v.cited_total && proven > 0;
-  add(allIn ? "ok" : proven ? "wait" : "bad", `${num(proven)} of ${num(v.cited_total)} trail entries proven in HEWN's public log`,
+  add(allIn ? "ok" : proven ? "wait" : "bad", `${num(proven)} of ${num(v.cited_total)} trail entries proven in HMN's public log`,
     `Each entry was recomputed and traced to the log's root (Merkle inclusion), ${span}.`);
 
-  // 3. the log's head is signed by HEWN's log key
-  const headOk = v.log.log_pubkey !== LOG_PUBKEY ? false : await ed25519(LOG_PUBKEY, v.log.head.sig, enc.encode(`hewn-tree-head|${v.log.head.size}|${v.log.head.root}|${v.log.head.ts_ms}`));
+  // 3. the log's head is signed by HMN's log key
+  const headOk = v.log.log_pubkey !== LOG_PUBKEY ? false : await ed25519(LOG_PUBKEY, v.log.head.sig, enc.encode(`hmn-tree-head|${v.log.head.size}|${v.log.head.root}|${v.log.head.ts_ms}`));
   add(headOk ? "ok" : headOk === null ? "wait" : "bad", "The public log's state is signed", `${num(v.log.head.size)} entries as of ${day(v.log.head.ts_ms)} · log key <code>${esc(v.log.log_pubkey.slice(0, 24))}…</code>`);
 
   // 4. Bitcoin anchor
@@ -242,7 +242,7 @@ async function verify(id) {
     ev.preventDefault();
     const bytes = Uint8Array.from(atob(a.ots_file), (ch) => ch.charCodeAt(0));
     const url = URL.createObjectURL(new Blob([bytes], { type: "application/octet-stream" }));
-    Object.assign(document.createElement("a"), { href: url, download: `hewn-log-${a.day}.ots` }).click();
+    Object.assign(document.createElement("a"), { href: url, download: `hmn-log-${a.day}.ots` }).click();
   });
 
   const bad = checks.some((k) => k.state === "bad");
@@ -251,8 +251,8 @@ async function verify(id) {
   $("#v-sub").textContent = bad
     ? "Something about this certificate doesn't check out. Details below."
     : c.kind === "archive"
-      ? "This beat was registered with HEWN; its record is in the public log and can't be changed."
-      : "HEWN witnessed this music being made. The certificate and its trail check out.";
+      ? "This beat was registered with HMN; its record is in the public log and can't be changed."
+      : "HMN witnessed this music being made. The certificate and its trail check out.";
 }
 
 const params = new URLSearchParams(location.search);
