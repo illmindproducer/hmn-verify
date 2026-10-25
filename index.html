@@ -70,6 +70,7 @@ button:active { transform: scale(.965); }
 footer { color: var(--ink-3); font-size: 12.5px; margin-top: 30px; line-height: 1.6; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+h2.private { color: var(--ink-2); font-weight: 500; }
 </style>
 </head>
 <body>
@@ -166,14 +167,15 @@ function card(c, id) {
   return `<svg class="seal" viewBox="0 0 40 40" aria-hidden="true"><use href="#seal"/></svg>
     <p class="eyebrow">${arch ? "Archive certificate" : "Certificate of human creation"}</p>
     <div class="cid">${esc(id)}</div>
-    <h2>${esc(c.project?.name)}</h2>
+    ${c.project?.name ? `<h2>${esc(c.project.name)}</h2>` : `<h2 class="private">Name kept private</h2>`}
     <div class="line">${esc(c.tier)} · <span class="badge ${arch ? "arch" : ""}">${esc(c.depth)}</span> · ${esc(c.project?.daw)}${c.pre_ai_candidate ? ` · <span class="badge arch">Pre-AI candidate</span>` : ""}</div>
     <div class="strength" style="--fill:${arch ? "var(--archive)" : "var(--live)"}"><span class="sbar">${bars}</span><span class="s-num">${n}<small>/5</small></span>
       <span class="s-label">Proof strength · ${arch ? "Back catalog" : "HMN watched"}</span></div>
     <div class="grid">${tiles.map(([b, s]) => `<div><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join("")}</div>
     ${c.audio_witnessed === false ? `<p class="note" style="color:var(--amber)">HMN witnessed this project, but not this audio being exported from it. The link is the creator's claim.</p>` : ""}
     ${ev.snapshots_matching_final ? `<p class="note">The final audio was heard taking shape in the DAW ${ev.snapshots_matching_final} times while it was being made.</p>` : ""}
-    ${arch ? `<p class="note">${esc(c.note)}</p>` : ""}`;
+    ${arch ? `<p class="note">${esc(c.note)}</p>` : ""}
+    ${c.project?.name_sealed ? `<p class="note">The creator keeps this beat's name private. The certificate holds only a sealed fingerprint of the name (<code>${esc(c.project.name_sealed.slice(0, 16))}…</code>), so the name can be revealed and checked later, but can't be read or guessed from this page.</p>` : ""}`;
 }
 
 async function verify(id) {
@@ -194,7 +196,7 @@ async function verify(id) {
   }
   const c = JSON.parse(v.certificate.canonical);
   $("#card").innerHTML = card(c, v.certificate.id);
-  document.title = `HMN · ${c.project?.name || id}`;
+  document.title = `HMN · ${c.project?.name || id}`; // older certificates showed the name
 
   const checks = [];
   const add = (state, title, detail) => checks.push({ state, title, detail });
