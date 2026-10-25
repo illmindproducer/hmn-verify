@@ -110,6 +110,8 @@ footer { color: var(--ink-3); font-size: 12.5px; margin-top: 30px; line-height: 
 
 <script>
 const API = "https://sczucnlruwppyxzvhypq.supabase.co/functions/v1";
+// The log's public key, pinned here so a tampered server can't swap in its own.
+const LOG_PUBKEY = "0818b6cae322d69a94dcea4453f95fd82c0ea0e0d0e9726d5a9ee215d26b3011";
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const enc = new TextEncoder();
@@ -220,7 +222,7 @@ async function verify(id) {
     `Each entry was recomputed and traced to the log's root (Merkle inclusion), ${span}.`);
 
   // 3. the log's head is signed by HEWN's log key
-  const headOk = await ed25519(v.log.log_pubkey, v.log.head.sig, enc.encode(`hewn-tree-head|${v.log.head.size}|${v.log.head.root}|${v.log.head.ts_ms}`));
+  const headOk = v.log.log_pubkey !== LOG_PUBKEY ? false : await ed25519(LOG_PUBKEY, v.log.head.sig, enc.encode(`hewn-tree-head|${v.log.head.size}|${v.log.head.root}|${v.log.head.ts_ms}`));
   add(headOk ? "ok" : headOk === null ? "wait" : "bad", "The public log's state is signed", `${num(v.log.head.size)} entries as of ${day(v.log.head.ts_ms)} · log key <code>${esc(v.log.log_pubkey.slice(0, 24))}…</code>`);
 
   // 4. Bitcoin anchor
